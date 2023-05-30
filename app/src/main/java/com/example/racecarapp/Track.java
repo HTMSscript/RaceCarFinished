@@ -2,25 +2,31 @@ package com.example.racecarapp;
 
 
 //javadoc description
+
+import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+
 /**
  * This is a template to create tracks for the cars to race on
  * @author Luke Porter
  * @version 0.5
  */
-public class Track{
+public class Track {
 
     /**
      * length of each lap
      */
-    private int lapLength;
+    private final int lapLength;
     /**
      * number of laps on each track
      */
-    private int numLaps;
+    private final int numLaps;
     /**
      * name of track
      */
-    private String name;
+    private final String name;
 
     //at least two instance variables of type YourClass
     /**
@@ -31,6 +37,14 @@ public class Track{
      * npc racer on the track
      */
     private Car aiRacer;
+    /**
+     * printed text
+     */
+    private String trackTxt;
+
+    Button btn1 = MainActivity.getBtnOpt1();
+    Button btn2 = MainActivity.getBtnOpt2();
+    Button btn3 = MainActivity.getBtnOpt3();
 
     //constructors
     /**
@@ -69,6 +83,10 @@ public class Track{
         this.name = "Bahrain";
     }
 
+    public String getTrackTxt() {
+        return trackTxt;
+    }
+
     //toString method
     /**
      * Method that prints a track instance as a String
@@ -76,6 +94,7 @@ public class Track{
      * <br>Postconditions: Prints name, number of laps, and first and second
      *    racer on the track.
      */
+    @NonNull
     public String toString()
     {
         return "Name:\t\t  " + name +
@@ -83,12 +102,6 @@ public class Track{
                 "\nFirst Racer:  " + playerRacer.getBrand() +
                 "\nSecond Racer: " + aiRacer.getBrand();
     }
-
-    /**
-     * variable used for future choices the user makes
-     */
-    int choice; //variable used for future choices
-
 
     /**
      * Method that runs when the cars race
@@ -104,46 +117,46 @@ public class Track{
         aiRacer.setCurrentSpeed(0);
 
         //intro to game
-        System.out.println("Welcome to " + name + ". Today we will be pitting you, the " + playerRacer.getBrand() + ", against your opponent, the " + aiRacer.getBrand() + "!");
-        playerStart();
+        trackTxt = "Welcome to " + name + ". Today we will be pitting you, the " + playerRacer.getBrand() + ", against your opponent, the " + aiRacer.getBrand() + "!";
+        playerStart(btn1, btn2);
         aiStart();
 
         //simulation loop
         while (playerRacer.getLaps() < numLaps && aiRacer.getLaps() < numLaps)
         {
 
-            playerRace();
+            playerRace(btn1,btn2,btn3);
             aiRace();
             if(playerRacer.getCurrentSpeed() > lapLength && playerRacer.getLaps() < numLaps)
             {
                 playerRacer.lap();
-                System.out.println("You completed a lap! You are on lap " + playerRacer.getLaps() + "/" + numLaps);
+                trackTxt = "You completed a lap! You are on lap " + playerRacer.getLaps() + "/" + numLaps;
             }
             if(aiRacer.getCurrentSpeed() > lapLength && aiRacer.getLaps() < numLaps)
             {
                 aiRacer.lap();
-                System.out.println("Your oppenent completed a lap! They are on lap " + aiRacer.getLaps() + "/" + numLaps);
+                trackTxt = "Your opponent completed a lap! They are on lap " + aiRacer.getLaps() + "/" + numLaps;
             }
         }
         //if statements determining who wins
         if (playerRacer.getLaps() > aiRacer.getLaps())
         {
-            System.out.println("\nYou race across the finish line ahead of your opponent! Congratulations you have won the race!!");
+            trackTxt = "\nYou race across the finish line ahead of your opponent! Congratulations you have won the race!!";
         }
         else if (playerRacer.getLaps() < aiRacer.getLaps())
         {
-            System.out.println("\nYour opponent races across the finish line ahead of you! Sadly, you have lost the race!!");
+            trackTxt = "\nYour opponent races across the finish line ahead of you! Sadly, you have lost the race!!";
         }
         else
         {
             //if laps are reached at the same time, speed is tiebreaker
             if (playerRacer.getCurrentSpeed() > aiRacer.getCurrentSpeed())
             {
-                System.out.println("It's a photo finish... \n The " + playerRacer.getBrand() + " has it!! Congratulations!");
+               trackTxt = "It's a photo finish... \n The " + playerRacer.getBrand() + " has it!! Congratulations!";
             }
             else
             {
-                System.out.println("It's a photo finish... \n The " + aiRacer.getBrand() + " has it!! Tough Break!");
+                trackTxt = "It's a photo finish... \n The " + aiRacer.getBrand() + " has it!! Tough Break!";
             }
         }
 
@@ -158,28 +171,29 @@ public class Track{
      * <br>Postconditions: runs the methods useNitro or sets current speed
      *    to 7.5 depending on user input
      */
-    private void playerStart()
+
+    private void playerStart(Button btn1, Button btn2)
     {
-        while (choice != 2 && choice != 1)
-        {
-            System.out.println("3... 2... 1.. GO!\nDo you start the race with (press 1) or without (press 2) Nitro?");
-            choice = scan.nextInt();
-            if (choice == 1)
-            {
-                System.out.println("You used Nitro! You zoom ahead.");
-                playerRacer.useNitro();
-            }
-            else if (choice == 2)
-            {
-                System.out.println("You chose the slow start, but saved a canister for later.");
-                playerRacer.setCurrentSpeed(7.5);
-            }
-            else
-            {
-                System.out.println("Please pick either 1 or 2");
-            }
-        }
+
+        trackTxt = "3... 2... 1.. GO!\nDo you start the race with (press 1) or without (press 2) Nitro?";
+
+           btn1.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   trackTxt = "You used Nitro! You zoom ahead.";
+                   playerRacer.useNitro();
+               }
+           });
+
+           btn2.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   trackTxt = "You chose the slow start, but saved a canister for later.";
+                   playerRacer.setCurrentSpeed(7.5);
+               }
+           });
     }
+
     /**
      * Method that runs when the nonplayer controlled car starts the race
      * <br>Preconditions: none
@@ -191,12 +205,12 @@ public class Track{
         int rand = (int) (2*Math.random());
         if (rand == 0)
         {
-            System.out.println("Your opponent used nitro!");
+            trackTxt = "Your opponent used nitro!";
             aiRacer.useNitro();
         }
         else
         {
-            System.out.println("Your opponent accelerated normally.");
+            trackTxt = "Your opponent accelerated normally.";
             aiRacer.setCurrentSpeed(7.5);
         }
     }
@@ -207,30 +221,33 @@ public class Track{
      *    based on user input. If the user chooses an unavailable option,
      *    the game ends.
      */
-    private void playerRace()
+    private void playerRace(Button btn1, Button btn2, Button btn3)
     {
-        System.out.println("\nThe race is on! Do you \n1. Take a pit stop \n2. Use nitro \n3. Continue driving");
-        choice = scan.nextInt();
-        System.out.println("\n");
-        if (choice == 1)
-        {
-            playerRacer.pitStop();
-            System.out.println("You take a pit stop, slowing down but adding more nitro cans!");
-        }
-        else if (choice == 2)
-        {
-            System.out.println("You use your nitro, flying forward and increasing your speed!");
-            playerRacer.useNitro();
-        }
-        else if (choice == 3)
-        {
-            playerRacer.drive();
-        }
-        else
-        {
-            System.out.println("You throw your car into a spin and your engine combusts! The " + aiRacer.getBrand() + " wins.");
-            System.exit(0);
-        }
+        trackTxt = "\nThe race is on! Do you \n1. Take a pit stop \n2. Use nitro \n3. Continue driving";
+
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerRacer.pitStop();
+                trackTxt = "You take a pit stop, slowing down but adding more nitro cans!";
+            }
+        });
+
+        btn2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trackTxt = "You use your nitro, flying forward and increasing your speed!";
+                playerRacer.useNitro();
+            }
+        });
+
+        btn3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerRacer.drive();
+            }
+        });
+
     }
     /**
      * Method that runs during the race for the npc turn
@@ -244,12 +261,12 @@ public class Track{
         if (aiRacer.getNumNitroCans() == 0 || rand == 0)
         {
             aiRacer.pitStop();
-            System.out.println("Your opponent went into the pit!");
+            trackTxt = "Your opponent went into the pit!";
         }
         else if (rand == 1)
         {
             aiRacer.useNitro();
-            System.out.println("Your opponent used nitro!");
+            trackTxt = "Your opponent used nitro!";
         }
         else
         {

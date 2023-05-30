@@ -1,11 +1,13 @@
 package com.example.racecarapp;
 
+import java.io.Serializable;
+
 /**
  * This is a template to create cars in the racing game
  * @author Luke Porter
  * @version 1.0
  */
-public class Car{
+public class Car implements Serializable {
 
     //minimum 5 instance variables
     /**
@@ -35,7 +37,7 @@ public class Car{
     /**
      * printed String
      */
-    private String txt;
+    private String carTxt;
 
 
     //minimum 1 static variable for tracking object ID
@@ -172,7 +174,7 @@ public class Car{
      * Method that returns the String that holds text
      */
     public String getTxt() {
-        return txt;
+        return carTxt;
     }
     /**
      * Method that returns the number of cars there are
@@ -287,7 +289,7 @@ public class Car{
         }
         else
         {
-            txt = "But you're out of nitro cans! Take a pit stop to replenish.";
+            carTxt = "But you're out of nitro cans! Take a pit stop to replenish.";
             drive();
         }
     }
@@ -328,12 +330,12 @@ public class Car{
         if (i == 0)
         {
             currentSpeed += 5;
-            txt = "The " + brand + " gains momentum while driving!";
+            carTxt = "The " + brand + " gains momentum while driving!";
         }
         else
         {
             currentSpeed -=5;
-            txt = "The " + brand + " loses speed!";
+            carTxt = "The " + brand + " loses speed!";
         }
     }
 
