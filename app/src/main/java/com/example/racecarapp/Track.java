@@ -4,7 +4,6 @@ package com.example.racecarapp;
 //javadoc description
 
 import android.view.View;
-import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
@@ -32,19 +31,20 @@ public class Track {
     /**
      * player-controlled racer on the track
      */
-    private Car playerRacer;
+    private final Car playerRacer;
     /**
      * npc racer on the track
      */
-    private Car aiRacer;
+    private final Car aiRacer;
     /**
      * printed text
      */
-    private String trackTxt;
+    private static String trackTxt;
 
-    Button btn1 = MainActivity.getBtnOpt1();
-    Button btn2 = MainActivity.getBtnOpt2();
-    Button btn3 = MainActivity.getBtnOpt3();
+    public static void setTrackTxt(String str) {
+        trackTxt = str;
+    }
+
 
     //constructors
     /**
@@ -64,28 +64,7 @@ public class Track {
         this.aiRacer = aiRacer;
         this.name = "Monaco";
     }
-    /**
-     * Constructor that initializes the player, number of laps, and ai racer
-     * <br>Preconditions: playerRacer and aiRacer exists
-     * <br>Postconditions: creates a Track object with playerRacer
-     *    "playerRacer", aiRacer "aiRacer", lapLength of 20, numLaps "numLaps",
-     *    and the name "Bahrain"
-     * @param playerRacer: player-controlled racer
-     * @param aiRacer: npc racer
-     * @param numLaps: number of laps
-     */
-    public Track(int numLaps, Car playerRacer, Car aiRacer)
-    {
-        this.lapLength = 20;
-        this.numLaps = numLaps;
-        this.playerRacer = playerRacer;
-        this.aiRacer = aiRacer;
-        this.name = "Bahrain";
-    }
 
-    public String getTrackTxt() {
-        return trackTxt;
-    }
 
     //toString method
     /**
@@ -115,51 +94,131 @@ public class Track {
         playerRacer.setCurrentSpeed(0);
         aiRacer.setLaps(1);
         aiRacer.setCurrentSpeed(0);
+        MainActivity.getIvFin().setVisibility(View.INVISIBLE);
+        MainActivity.getIvMon().setVisibility(View.VISIBLE);
 
         //intro to game
         trackTxt = "Welcome to " + name + ". Today we will be pitting you, the " + playerRacer.getBrand() + ", against your opponent, the " + aiRacer.getBrand() + "!";
-        playerStart(btn1, btn2);
-        aiStart();
+        MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+        MainActivity.btnSetVis(MainActivity.getBtnOpt3());
+        MainActivity.btnSetText(MainActivity.getBtnOpt3(), "Continue");
+        MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerStart();
+                aiStart();
+            }
+        });
 
-        //simulation loop
-        while (playerRacer.getLaps() < numLaps && aiRacer.getLaps() < numLaps)
+    }
+
+
+    private void laps() {
+        if(playerRacer.getCurrentSpeed() > lapLength && playerRacer.getLaps() < numLaps)
         {
-
-            playerRace(btn1,btn2,btn3);
-            aiRace();
-            if(playerRacer.getCurrentSpeed() > lapLength && playerRacer.getLaps() < numLaps)
-            {
-                playerRacer.lap();
-                trackTxt = "You completed a lap! You are on lap " + playerRacer.getLaps() + "/" + numLaps;
-            }
-            if(aiRacer.getCurrentSpeed() > lapLength && aiRacer.getLaps() < numLaps)
-            {
-                aiRacer.lap();
-                trackTxt = "Your opponent completed a lap! They are on lap " + aiRacer.getLaps() + "/" + numLaps;
-            }
+            playerRacer.lap();
+            trackTxt += "\nYou completed a lap! You are on lap " + playerRacer.getLaps() + "/" + numLaps;
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
         }
+        if(aiRacer.getCurrentSpeed() > lapLength && aiRacer.getLaps() < numLaps)
+        {
+            aiRacer.lap();
+            trackTxt += "\nYour opponent completed a lap! They are on lap " + aiRacer.getLaps() + "/" + numLaps;
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+        }
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt1());
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt2());
+
+        MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (playerRacer.getLaps() == numLaps || aiRacer.getLaps() == numLaps) {
+                    wins();
+                }
+                else {
+                    playerRace();
+                }
+            }
+        });
+    }
+
+    private void wins() {
+        MainActivity.getIvDri().setVisibility(View.INVISIBLE);
+        MainActivity.getIvNit().setVisibility(View.INVISIBLE);
+        MainActivity.getIvPit().setVisibility(View.INVISIBLE);
+        MainActivity.getIvFin().setVisibility(View.VISIBLE);
         //if statements determining who wins
         if (playerRacer.getLaps() > aiRacer.getLaps())
         {
             trackTxt = "\nYou race across the finish line ahead of your opponent! Congratulations you have won the race!!";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+            MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playAgain();
+                }
+            });
         }
         else if (playerRacer.getLaps() < aiRacer.getLaps())
         {
             trackTxt = "\nYour opponent races across the finish line ahead of you! Sadly, you have lost the race!!";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+            MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playAgain();
+                }
+            });
         }
         else
         {
             //if laps are reached at the same time, speed is tiebreaker
             if (playerRacer.getCurrentSpeed() > aiRacer.getCurrentSpeed())
             {
-               trackTxt = "It's a photo finish... \n The " + playerRacer.getBrand() + " has it!! Congratulations!";
+                trackTxt = "\nIt's a photo finish... \nThe " + playerRacer.getBrand() + " has it!! Congratulations!";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+                MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playAgain();
+                    }
+                });
             }
             else
             {
-                trackTxt = "It's a photo finish... \n The " + aiRacer.getBrand() + " has it!! Tough Break!";
+                trackTxt = "\nIt's a photo finish... \nThe " + aiRacer.getBrand() + " has it!! Tough Break!";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+                MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playAgain();
+                    }
+                });
             }
         }
+    }
 
+    private void playAgain() {
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt3());
+        MainActivity.btnSetVis(MainActivity.getBtnOpt1());
+        MainActivity.btnSetVis(MainActivity.getBtnOpt2());
+        MainActivity.btnSetText(MainActivity.getBtnOpt1(), "Yes");
+        MainActivity.btnSetText(MainActivity.getBtnOpt2(), "No");
+
+        trackTxt = "Do you want to play again?";
+        MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+        MainActivity.getBtnOpt1().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                race();
+            }
+        });
+        MainActivity.getBtnOpt2().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.exit(0);
+            }
+        });
 
     }
 
@@ -172,27 +231,62 @@ public class Track {
      *    to 7.5 depending on user input
      */
 
-    private void playerStart(Button btn1, Button btn2)
-    {
+    private void playerStart() {
+        MainActivity.getIvMon().setVisibility(View.INVISIBLE);
+        MainActivity.getIvSta().setVisibility(View.VISIBLE);
 
-        trackTxt = "3... 2... 1.. GO!\nDo you start the race with (press 1) or without (press 2) Nitro?";
+        trackTxt = "3... 2... 1.. GO!\nDo you start the race with or without Nitro?";
+        MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+        MainActivity.btnSetVis(MainActivity.getBtnOpt1());
+        MainActivity.btnSetVis(MainActivity.getBtnOpt2());
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt3());
 
-           btn1.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   trackTxt = "You used Nitro! You zoom ahead.";
-                   playerRacer.useNitro();
-               }
-           });
 
-           btn2.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   trackTxt = "You chose the slow start, but saved a canister for later.";
-                   playerRacer.setCurrentSpeed(7.5);
-               }
-           });
+        MainActivity.btnSetText(MainActivity.getBtnOpt1(), "With Nitro");
+        MainActivity.btnSetText(MainActivity.getBtnOpt2(), "Without Nitro");
+
+        MainActivity.getBtnOpt1().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.getIvSta().setVisibility(View.INVISIBLE);
+                MainActivity.getIvNit().setVisibility(View.VISIBLE);
+                trackTxt = "You used Nitro! You zoom ahead.";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+                playerRacer.useNitro();
+                MainActivity.btnSetVis(MainActivity.getBtnOpt3());
+                MainActivity.btnSetInvis(MainActivity.getBtnOpt1());
+                MainActivity.btnSetInvis(MainActivity.getBtnOpt2());
+                MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playerRace();
+                    }
+                });
+            }
+        });
+
+        MainActivity.getBtnOpt2().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.getIvSta().setVisibility(View.INVISIBLE);
+                MainActivity.getIvDri().setVisibility(View.VISIBLE);
+                trackTxt = "You chose the slow start, but saved a canister for later.";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+                playerRacer.setCurrentSpeed(7.5);
+                MainActivity.btnSetVis(MainActivity.getBtnOpt3());
+                MainActivity.btnSetInvis(MainActivity.getBtnOpt1());
+                MainActivity.btnSetInvis(MainActivity.getBtnOpt2());
+
+                MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playerRace();
+                    }
+                });
+            }
+        });
     }
+
 
     /**
      * Method that runs when the nonplayer controlled car starts the race
@@ -205,12 +299,14 @@ public class Track {
         int rand = (int) (2*Math.random());
         if (rand == 0)
         {
-            trackTxt = "Your opponent used nitro!";
+            trackTxt += "\nYour opponent used nitro!";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
             aiRacer.useNitro();
         }
         else
         {
-            trackTxt = "Your opponent accelerated normally.";
+            trackTxt += "\nYour opponent accelerated normally.";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
             aiRacer.setCurrentSpeed(7.5);
         }
     }
@@ -221,30 +317,52 @@ public class Track {
      *    based on user input. If the user chooses an unavailable option,
      *    the game ends.
      */
-    private void playerRace(Button btn1, Button btn2, Button btn3)
+    private void playerRace()
     {
-        trackTxt = "\nThe race is on! Do you \n1. Take a pit stop \n2. Use nitro \n3. Continue driving";
+        trackTxt = "\nThe race is on! Would you like to pit stop, use a nitro can, or continue driving?";
+        MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+        MainActivity.btnSetText(MainActivity.getBtnOpt1(), "Pit Stop");
+        MainActivity.btnSetText(MainActivity.getBtnOpt2(), "Use Nitro");
+        MainActivity.btnSetVis(MainActivity.getBtnOpt2());
+        MainActivity.btnSetVis(MainActivity.getBtnOpt1());
 
-        btn1.setOnClickListener(new View.OnClickListener() {
+        MainActivity.getBtnOpt1().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.getIvDri().setVisibility(View.INVISIBLE);
+                MainActivity.getIvNit().setVisibility(View.INVISIBLE);
+                MainActivity.getIvPit().setVisibility(View.VISIBLE);
                 playerRacer.pitStop();
                 trackTxt = "You take a pit stop, slowing down but adding more nitro cans!";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
+                aiRace();
+                laps();
             }
         });
 
-        btn2.setOnClickListener(new View.OnClickListener() {
+        MainActivity.getBtnOpt2().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.getIvDri().setVisibility(View.INVISIBLE);
+                MainActivity.getIvNit().setVisibility(View.VISIBLE);
+                MainActivity.getIvPit().setVisibility(View.INVISIBLE);
                 trackTxt = "You use your nitro, flying forward and increasing your speed!";
+                MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
                 playerRacer.useNitro();
+                aiRace();
+                laps();
             }
         });
 
-        btn3.setOnClickListener(new View.OnClickListener() {
+        MainActivity.getBtnOpt3().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.getIvDri().setVisibility(View.VISIBLE);
+                MainActivity.getIvNit().setVisibility(View.INVISIBLE);
+                MainActivity.getIvPit().setVisibility(View.INVISIBLE);
                 playerRacer.drive();
+                aiRace();
+                laps();
             }
         });
 
@@ -261,12 +379,14 @@ public class Track {
         if (aiRacer.getNumNitroCans() == 0 || rand == 0)
         {
             aiRacer.pitStop();
-            trackTxt = "Your opponent went into the pit!";
+            trackTxt += "\nYour opponent went into the pit!";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
         }
         else if (rand == 1)
         {
             aiRacer.useNitro();
-            trackTxt = "Your opponent used nitro!";
+            trackTxt += "\nYour opponent used nitro!";
+            MainActivity.tvSetText(MainActivity.getTvDesc(), trackTxt);
         }
         else
         {

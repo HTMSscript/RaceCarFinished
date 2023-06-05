@@ -9,6 +9,7 @@ import java.io.Serializable;
  */
 public class Car implements Serializable {
 
+
     //minimum 5 instance variables
     /**
      * brand of car
@@ -173,15 +174,7 @@ public class Car implements Serializable {
     /**
      * Method that returns the String that holds text
      */
-    public String getTxt() {
-        return carTxt;
-    }
-    /**
-     * Method that returns the number of cars there are
-     * <br>Precondition: none
-     * <br>Postcondition: returns number of cars as an int
-     * @return total number of cars
-     */
+
     public static int getTotalNumCars()
     {
         return numCars;
@@ -290,6 +283,7 @@ public class Car implements Serializable {
         else
         {
             carTxt = "But you're out of nitro cans! Take a pit stop to replenish.";
+            Track.setTrackTxt(carTxt);
             drive();
         }
     }
@@ -330,33 +324,15 @@ public class Car implements Serializable {
         if (i == 0)
         {
             currentSpeed += 5;
-            carTxt = "The " + brand + " gains momentum while driving!";
+            carTxt = "\nThe " + brand + " gains momentum while driving!";
+            Track.setTrackTxt(carTxt);
         }
         else
         {
             currentSpeed -=5;
-            carTxt = "The " + brand + " loses speed!";
+            carTxt = "\nThe " + brand + " loses speed!";
+            Track.setTrackTxt(carTxt);
         }
     }
 
-    //equals method
-    /**
-     * Method that tests if one car is equal to another
-     * <br>Precondition: both cars exist
-     * <br>Postcondition: returns a boolean value of whether the cars
-     *   are equal
-     * @param anotherCar: a different car
-     * @return result: whether the cars are equal
-     */
-    public boolean equals(Car anotherCar)
-    {
-        boolean result = false;
-        if (this.currentSpeed == anotherCar.getCurrentSpeed() &&
-                this.nitroCans == anotherCar.getNumNitroCans()
-        )
-        {
-            result = true;
-        }
-        return result;
-    }
 }
