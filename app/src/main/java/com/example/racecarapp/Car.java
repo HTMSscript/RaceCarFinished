@@ -135,7 +135,9 @@ public class Car implements Serializable {
     //set methods for each instance variable
 
 
-
+    public void setNitroCans(int nitroCans) {
+        this.nitroCans = nitroCans;
+    }
 
     /**
      * Method that sets the laps of the car

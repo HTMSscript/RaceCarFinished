@@ -92,10 +92,15 @@ public class Track {
         //set both racers laps to 1 and speed to 0
         playerRacer.setLaps(1);
         playerRacer.setCurrentSpeed(0);
+        playerRacer.setNitroCans(2);
         aiRacer.setLaps(1);
         aiRacer.setCurrentSpeed(0);
+        aiRacer.setNitroCans(2);
+
         MainActivity.getIvFin().setVisibility(View.INVISIBLE);
         MainActivity.getIvMon().setVisibility(View.VISIBLE);
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt1());
+        MainActivity.btnSetInvis(MainActivity.getBtnOpt2());
 
         //intro to game
         trackTxt = "Welcome to " + name + ". Today we will be pitting you, the " + playerRacer.getBrand() + ", against your opponent, the " + aiRacer.getBrand() + "!";
