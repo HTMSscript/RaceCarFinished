@@ -1,24 +1,22 @@
 package com.example.racecarapp;
 
-import java.io.Serializable;
-
 /**
  * This is a template to create cars in the racing game
  * @author Luke Porter
  * @version 1.0
  */
-public class Car implements Serializable {
+public class Car{
 
 
     //minimum 5 instance variables
     /**
      * brand of car
      */
-    private String brand;
+    private final String brand;
     /**
      * color of car
      */
-    private String color;
+    private final String color;
     /**
      * laps of car
      */
@@ -32,20 +30,9 @@ public class Car implements Serializable {
      */
     private int nitroCans;
     /**
-     * Car iD
-     */
-    private int carID;
-    /**
      * printed String
      */
     private String carTxt;
-
-
-    //minimum 1 static variable for tracking object ID
-    /**
-     * total number of cars
-     */
-    private static int numCars;
 
     //minimum 3 constructors (1 default) that track object ID
     /**
@@ -62,8 +49,6 @@ public class Car implements Serializable {
         this.laps = 1;
         this.currentSpeed = 0;
         this.nitroCans = 2;
-        numCars++;
-        this.carID = numCars;
     }
 
     /**
@@ -83,8 +68,6 @@ public class Car implements Serializable {
         this.laps = 1;
         this.currentSpeed = 0;
         this.nitroCans = 2;
-        numCars++;
-        this.carID = numCars;
     }
 
 
@@ -131,6 +114,9 @@ public class Car implements Serializable {
         return nitroCans;
     }
 
+    public String getColor() {
+        return color;
+    }
 
     //set methods for each instance variable
 

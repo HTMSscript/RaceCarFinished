@@ -2,8 +2,6 @@ package com.example.racecarapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private static Button btnOpt3;
 
 
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,12 +46,6 @@ public class MainActivity extends AppCompatActivity {
         ivNit.setVisibility(View.INVISIBLE);
         ivPit.setVisibility(View.INVISIBLE);
         ivSta.setVisibility(View.INVISIBLE);
-
-
-
-        //Intent intent = new Intent(this, exampleActivity.class);
-        //intent.putExtra("key ", data);
-
 
         Car honda = new Car();
         Car lexus = new Car("Lexus", "Silver");
